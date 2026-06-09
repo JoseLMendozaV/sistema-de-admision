@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear cuenta{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
+    <h1 class="text-3xl font-black text-slate-900">Crear cuenta de aspirante</h1>
+    <p class="text-slate-600 mt-2">
+        Regístrese para iniciar su solicitud de admisión.
+    </p>
+
+    <form method="post" class="mt-6 space-y-5">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div>
+                <label class="block font-semibold mb-2">{{ field.label }}</label>
+                {{ field }}
+
+                {% if field.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ field.errors|striptags }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button class="w-full bg-blue-700 text-white py-3 rounded-2xl font-bold hover:bg-blue-800">
+            Crear cuenta
+        </button>
+    </form>
+</div>
+{% endblock %}

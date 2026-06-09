@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil de admisión{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
+    <h1 class="text-3xl font-black text-slate-900">Perfil de admisión</h1>
+    <p class="text-slate-600 mt-2">
+        Complete su información general. Esto permitirá mostrar los requisitos que aplican a su caso.
+    </p>
+
+    <form method="post" class="mt-6 space-y-5">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div>
+                <label class="block font-semibold mb-2">{{ field.label }}</label>
+
+                {% if field.field.widget.input_type == 'checkbox' %}
+                    <div class="flex items-center gap-3">
+                        {{ field }}
+                        <span class="text-slate-600 text-sm">Sí</span>
+                    </div>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+
+                {% if field.help_text %}
+                    <p class="text-sm text-slate-500 mt-1">{{ field.help_text }}</p>
+                {% endif %}
+
+                {% if field.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ field.errors|striptags }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="flex gap-3">
+            <button class="bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-800">
+                Guardar perfil
+            </button>
+
+            <a href="{% url 'admisiones:estudiante_dashboard' %}" class="bg-slate-100 text-slate-800 px-6 py-3 rounded-2xl font-bold hover:bg-slate-200">
+                Volver
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

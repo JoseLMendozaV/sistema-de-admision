@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio | Sistema de Admisión{% endblock %}
+
+{% block content %}
+<section class="grid lg:grid-cols-2 gap-8 items-center">
+    <div>
+        <span class="inline-flex px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+            Plataforma de admisión de postgrado
+        </span>
+
+        <h1 class="mt-6 text-4xl md:text-5xl font-black text-slate-900 leading-tight">
+            Gestión digital de requisitos de ingreso
+        </h1>
+
+        <p class="mt-5 text-lg text-slate-600">
+            Los aspirantes pueden crear una cuenta, completar su información y registrar enlaces
+            compartidos de los documentos solicitados. La administración podrá revisar cada requisito,
+            cambiar estados y dejar observaciones.
+        </p>
+
+        <div class="mt-8 flex gap-3">
+            <a href="{% url 'admisiones:registro_estudiante' %}" class="bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-800 shadow-lg shadow-blue-200">
+                Crear cuenta
+            </a>
+
+            <a href="{% url 'login' %}" class="bg-white text-slate-800 px-6 py-3 rounded-2xl font-bold border border-slate-200 hover:bg-slate-50">
+                Iniciar sesión
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-200">
+        <h2 class="font-black text-2xl text-slate-900 mb-4">Estados de revisión</h2>
+
+        <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-gray-50 border">Sin enviar</div>
+            <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700">En revisión</div>
+            <div class="p-4 rounded-2xl bg-yellow-50 border border-yellow-200 text-yellow-800">En proceso</div>
+            <div class="p-4 rounded-2xl bg-orange-50 border border-orange-200 text-orange-800">Subsanar</div>
+            <div class="p-4 rounded-2xl bg-green-50 border border-green-200 text-green-700">Aprobado</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

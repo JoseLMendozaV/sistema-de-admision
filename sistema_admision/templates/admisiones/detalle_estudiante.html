@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del estudiante{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'admisiones:panel_admin' %}" class="text-blue-700 font-bold hover:underline">
+        ← Volver al panel
+    </a>
+</div>
+
+<div class="bg-white rounded-3xl shadow border border-slate-200 p-6 mb-8">
+    <h1 class="text-3xl font-black text-slate-900">
+        {{ profile.user.get_full_name|default:profile.user.username }}
+    </h1>
+
+    <div class="grid md:grid-cols-2 gap-4 mt-5 text-sm">
+        <p><strong>Correo:</strong> {{ profile.user.email }}</p>
+        <p><strong>Cédula / Pasaporte:</strong> {{ profile.cedula_pasaporte|default:'No indicado' }}</p>
+        <p><strong>Teléfono:</strong> {{ profile.telefono|default:'No indicado' }}</p>
+        <p><strong>Programa:</strong> {{ profile.programa_postgrado|default:'No indicado' }}</p>
+        <p><strong>Facultad o Centro Regional:</strong> {{ profile.centro_regional|default:'No indicado' }}</p>
+        <p><strong>Universidad de origen:</strong> {{ profile.get_universidad_origen_display }}</p>
+        <p><strong>Nombre universidad origen:</strong> {{ profile.nombre_universidad_origen|default:'No indicado' }}</p>
+        <p><strong>Sistema calificación diferente:</strong> {% if profile.sistema_calificacion_diferente %}Sí{% else %}No{% endif %}</p>
+    </div>
+</div>
+
+<div class="grid gap-6">
+    {% for entrega in entregas %}
+        <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div class="flex-1">
+                    <h2 class="text-xl font-black text-slate-900">
+                        {{ entrega.requirement.titulo }}
+                    </h2>
+
+                    <p class="text-slate-600 mt-2">
+                        {{ entrega.requirement.descripcion }}
+                    </p>
+
+                    <div class="mt-4">
+                        <span class="px-4 py-2 rounded-full border text-sm font-bold {{ entrega.badge_class }}">
+                            {{ entrega.get_estado_display }}
+                        </span>
+                    </div>
+
+                    {% if entrega.enlace_url %}
+                        <div class="mt-4 flex flex-wrap gap-3">
+                            <a href="{{ entrega.enlace_url }}" target="_blank" class="bg-slate-900 text-white px-4 py-3 rounded-2xl font-bold hover:bg-slate-700">
+                                Abrir documento
+                            </a>
+
+                            <button
+                                type="button"
+                                class="copiar-link bg-slate-100 text-slate-800 px-4 py-3 rounded-2xl font-bold hover:bg-slate-200"
+                                data-url="{{ entrega.enlace_url }}"
+                            >
+                                Copiar enlace
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-4 text-gray-600">
+                            El estudiante aún no ha enviado enlace para este requisito.
+                        </div>
+                    {% endif %}
+                </div>
+
+                <form method="post" action="{% url 'admisiones:revisar_entrega' entrega.id %}" class="w-full lg:w-96 bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                    {% csrf_token %}
+
+                    <label class="block font-semibold mb-2">Estado</label>
+                    <select name="estado" class="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        {% for value, label in entrega.STATUS_CHOICES %}
+                            <option value="{{ value }}" {% if entrega.estado == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label class="block font-semibold mb-2">Observación</label>
+                    <textarea name="observacion_admin" rows="4" class="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ entrega.observacion_admin }}</textarea>
+
+                    <button class="w-full bg-blue-700 text-white py-3 rounded-2xl font-bold hover:bg-blue-800">
+                        Guardar revisión
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
