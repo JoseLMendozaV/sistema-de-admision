@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.http import JsonResponse
+from .models import Requirement, StudentProfile, StudentDocumentSubmission, AcademicUnit, GraduateProgram
 
 from .forms import (
     RegistroEstudianteForm,
@@ -216,3 +218,23 @@ def revisar_entrega(request, entrega_id):
             return redirect('admisiones:detalle_estudiante', profile_id=entrega.profile.id)
 
     return redirect('admisiones:detalle_estudiante', profile_id=entrega.profile.id)
+
+
+@login_required
+def programas_por_unidad(request):
+    unidad_id = request.GET.get('unidad_id')
+
+    programas = GraduateProgram.objects.filter(
+        unidad_academica_id=unidad_id,
+        activo=True
+    ).order_by('orden', 'nombre')
+
+    data = [
+        {
+            'id': programa.id,
+            'nombre': programa.nombre,
+        }
+        for programa in programas
+    ]
+
+    return JsonResponse({'programas': data})

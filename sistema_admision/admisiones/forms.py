@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import StudentProfile, StudentDocumentSubmission
+from .models import StudentProfile, StudentDocumentSubmission, AcademicUnit, GraduateProgram
 
 
 INPUT_CLASS = (
@@ -55,8 +55,8 @@ class StudentProfileForm(forms.ModelForm):
         fields = [
             'cedula_pasaporte',
             'telefono',
-            'programa_postgrado',
             'centro_regional',
+            'programa_postgrado',
             'universidad_origen',
             'nombre_universidad_origen',
             'sistema_calificacion_diferente',
@@ -65,8 +65,8 @@ class StudentProfileForm(forms.ModelForm):
         labels = {
             'cedula_pasaporte': 'Cédula, pasaporte o carné de migración',
             'telefono': 'Teléfono',
-            'programa_postgrado': 'Programa de postgrado al que aplica',
             'centro_regional': 'Facultad o Centro Regional',
+            'programa_postgrado': 'Programa de postgrado al que aplica',
             'universidad_origen': 'Universidad de origen',
             'nombre_universidad_origen': 'Nombre de la universidad de origen',
             'sistema_calificacion_diferente': '¿El sistema de calificación es diferente al de la UTP?',
@@ -75,11 +75,32 @@ class StudentProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.fields['centro_regional'].queryset = AcademicUnit.objects.filter(activo=True)
+        self.fields['programa_postgrado'].queryset = GraduateProgram.objects.none()
+
+        if 'centro_regional' in self.data:
+            try:
+                unidad_id = int(self.data.get('centro_regional'))
+                self.fields['programa_postgrado'].queryset = GraduateProgram.objects.filter(
+                    unidad_academica_id=unidad_id,
+                    activo=True
+                )
+            except (ValueError, TypeError):
+                pass
+        elif self.instance and self.instance.centro_regional:
+            self.fields['programa_postgrado'].queryset = GraduateProgram.objects.filter(
+                unidad_academica=self.instance.centro_regional,
+                activo=True
+            )
+
         for name, field in self.fields.items():
             if isinstance(field.widget, forms.CheckboxInput):
                 field.widget.attrs.update({'class': CHECKBOX_CLASS})
             else:
                 field.widget.attrs.update({'class': INPUT_CLASS})
+
+        self.fields['centro_regional'].empty_label = 'Seleccione una opción'
+        self.fields['programa_postgrado'].empty_label = 'Seleccione primero la Facultad o Centro Regional'
 
 
 class StudentDocumentSubmissionForm(forms.ModelForm):

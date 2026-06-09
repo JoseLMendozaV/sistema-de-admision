@@ -1,45 +1,361 @@
 {% extends 'base.html' %}
 
-{% block title %}Inicio | Sistema de Admisión{% endblock %}
+{% block title %}Inicio | Sistema de Admisión de Postgrado{% endblock %}
 
 {% block content %}
-<section class="grid lg:grid-cols-2 gap-8 items-center">
-    <div>
-        <span class="inline-flex px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
-            Plataforma de admisión de postgrado
-        </span>
 
-        <h1 class="mt-6 text-4xl md:text-5xl font-black text-slate-900 leading-tight">
-            Gestión digital de requisitos de ingreso
-        </h1>
-
-        <p class="mt-5 text-lg text-slate-600">
-            Los aspirantes pueden crear una cuenta, completar su información y registrar enlaces
-            compartidos de los documentos solicitados. La administración podrá revisar cada requisito,
-            cambiar estados y dejar observaciones.
-        </p>
-
-        <div class="mt-8 flex gap-3">
-            <a href="{% url 'admisiones:registro_estudiante' %}" class="bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-800 shadow-lg shadow-blue-200">
-                Crear cuenta
-            </a>
-
-            <a href="{% url 'login' %}" class="bg-white text-slate-800 px-6 py-3 rounded-2xl font-bold border border-slate-200 hover:bg-slate-50">
-                Iniciar sesión
-            </a>
-        </div>
+<section class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 text-white shadow-2xl">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 -left-24 w-72 h-72 bg-cyan-300 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-200">
-        <h2 class="font-black text-2xl text-slate-900 mb-4">Estados de revisión</h2>
+    <div class="relative grid lg:grid-cols-2 gap-10 items-center px-6 py-14 md:px-12 md:py-20">
+        <div>
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-bold backdrop-blur">
+                <span class="w-2 h-2 rounded-full bg-green-300"></span>
+                Plataforma digital de admisión
+            </span>
 
-        <div class="space-y-3">
-            <div class="p-4 rounded-2xl bg-gray-50 border">Sin enviar</div>
-            <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700">En revisión</div>
-            <div class="p-4 rounded-2xl bg-yellow-50 border border-yellow-200 text-yellow-800">En proceso</div>
-            <div class="p-4 rounded-2xl bg-orange-50 border border-orange-200 text-orange-800">Subsanar</div>
-            <div class="p-4 rounded-2xl bg-green-50 border border-green-200 text-green-700">Aprobado</div>
+            <h1 class="mt-6 text-4xl md:text-6xl font-black leading-tight">
+                Gestión de requisitos de ingreso a Postgrado
+            </h1>
+
+            <p class="mt-6 text-lg md:text-xl text-blue-50 leading-relaxed">
+                Sistema para que los aspirantes creen su cuenta, completen su información,
+                registren enlaces de documentos compartidos y den seguimiento al estado de su solicitud.
+            </p>
+
+            <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'admisiones:panel_admin' %}" 
+                           class="inline-flex justify-center items-center px-6 py-4 rounded-2xl bg-white text-blue-800 font-black hover:bg-blue-50 transition shadow-xl">
+                            Ir al panel administrativo
+                        </a>
+                    {% else %}
+                        <a href="{% url 'admisiones:estudiante_dashboard' %}" 
+                           class="inline-flex justify-center items-center px-6 py-4 rounded-2xl bg-white text-blue-800 font-black hover:bg-blue-50 transition shadow-xl">
+                            Ver mi solicitud
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'admisiones:registro_estudiante' %}" 
+                       class="inline-flex justify-center items-center px-6 py-4 rounded-2xl bg-white text-blue-800 font-black hover:bg-blue-50 transition shadow-xl">
+                        Crear cuenta
+                    </a>
+
+                    <a href="{% url 'login' %}" 
+                       class="inline-flex justify-center items-center px-6 py-4 rounded-2xl bg-white/10 border border-white/30 text-white font-black hover:bg-white/20 transition backdrop-blur">
+                        Iniciar sesión
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="mt-8 grid grid-cols-3 gap-4 max-w-xl">
+                <div class="rounded-2xl bg-white/10 border border-white/20 p-4 backdrop-blur">
+                    <p class="text-3xl font-black">01</p>
+                    <p class="text-sm text-blue-50 mt-1">Registro</p>
+                </div>
+
+                <div class="rounded-2xl bg-white/10 border border-white/20 p-4 backdrop-blur">
+                    <p class="text-3xl font-black">02</p>
+                    <p class="text-sm text-blue-50 mt-1">Documentos</p>
+                </div>
+
+                <div class="rounded-2xl bg-white/10 border border-white/20 p-4 backdrop-blur">
+                    <p class="text-3xl font-black">03</p>
+                    <p class="text-sm text-blue-50 mt-1">Revisión</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white/95 text-slate-900 rounded-[2rem] p-6 md:p-8 shadow-2xl border border-white/40">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-sm font-bold text-blue-700 uppercase tracking-wider">
+                        Estado de solicitud
+                    </p>
+                    <h2 class="text-2xl font-black mt-1">
+                        Seguimiento en línea
+                    </h2>
+                </div>
+
+                <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 4h10a2 2 0 012 2v14l-7-3-7 3V6a2 2 0 012-2z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="mt-8 space-y-4">
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div class="w-10 h-10 rounded-xl bg-gray-200 flex items-center justify-center font-black text-gray-600">
+                        1
+                    </div>
+                    <div>
+                        <p class="font-black">Sin enviar</p>
+                        <p class="text-sm text-slate-500">El estudiante aún no ha registrado el enlace.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-blue-50 border border-blue-200">
+                    <div class="w-10 h-10 rounded-xl bg-blue-200 flex items-center justify-center font-black text-blue-700">
+                        2
+                    </div>
+                    <div>
+                        <p class="font-black text-blue-800">En revisión</p>
+                        <p class="text-sm text-blue-700">La administración está verificando el documento.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-yellow-50 border border-yellow-200">
+                    <div class="w-10 h-10 rounded-xl bg-yellow-200 flex items-center justify-center font-black text-yellow-800">
+                        3
+                    </div>
+                    <div>
+                        <p class="font-black text-yellow-900">En proceso</p>
+                        <p class="text-sm text-yellow-800">El requisito está siendo validado internamente.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-orange-50 border border-orange-200">
+                    <div class="w-10 h-10 rounded-xl bg-orange-200 flex items-center justify-center font-black text-orange-800">
+                        4
+                    </div>
+                    <div>
+                        <p class="font-black text-orange-900">Subsanar</p>
+                        <p class="text-sm text-orange-800">El estudiante debe corregir o actualizar el enlace.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-green-50 border border-green-200">
+                    <div class="w-10 h-10 rounded-xl bg-green-200 flex items-center justify-center font-black text-green-800">
+                        5
+                    </div>
+                    <div>
+                        <p class="font-black text-green-900">Aprobado</p>
+                        <p class="text-sm text-green-800">El requisito fue validado correctamente.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
+
+
+<section class="mt-10 grid md:grid-cols-3 gap-6">
+    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition">
+        <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center mb-5">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 00-8 0v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+        <h3 class="text-xl font-black text-slate-900">Cuenta de aspirante</h3>
+        <p class="mt-3 text-slate-600">
+            Cada estudiante crea su usuario para registrar información personal y dar seguimiento a su admisión.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition">
+        <div class="w-14 h-14 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center mb-5">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-8.5"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 3l-9 9"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-black text-slate-900">Enlaces compartidos</h3>
+        <p class="mt-3 text-slate-600">
+            No se almacenan archivos en la plataforma. El estudiante solo registra la URL del documento compartido.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition">
+        <div class="w-14 h-14 rounded-2xl bg-green-100 text-green-700 flex items-center justify-center mb-5">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 11l3 3L22 4"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-black text-slate-900">Revisión administrativa</h3>
+        <p class="mt-3 text-slate-600">
+            El personal administrativo puede revisar enlaces, cambiar estados y dejar observaciones visibles al estudiante.
+        </p>
+    </div>
+</section>
+
+
+<section class="mt-10 grid lg:grid-cols-2 gap-8">
+    <div class="bg-white rounded-[2rem] p-8 border border-slate-200 shadow-sm">
+        <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+            Requisitos principales
+        </p>
+
+        <h2 class="mt-2 text-3xl font-black text-slate-900">
+            Documentos solicitados para admisión
+        </h2>
+
+        <p class="mt-4 text-slate-600">
+            El sistema permite dar seguimiento a los requisitos establecidos para el ingreso a programas de postgrado.
+        </p>
+
+        <div class="mt-6 space-y-3">
+            <div class="flex gap-3">
+                <span class="mt-1 w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">✓</span>
+                <p class="text-slate-700">Diploma confrontado contra original.</p>
+            </div>
+
+            <div class="flex gap-3">
+                <span class="mt-1 w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">✓</span>
+                <p class="text-slate-700">Créditos universitarios confrontados.</p>
+            </div>
+
+            <div class="flex gap-3">
+                <span class="mt-1 w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">✓</span>
+                <p class="text-slate-700">Fotos tamaño carné y Curriculum Vitae.</p>
+            </div>
+
+            <div class="flex gap-3">
+                <span class="mt-1 w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">✓</span>
+                <p class="text-slate-700">Cartas de solicitud de ingreso.</p>
+            </div>
+
+            <div class="flex gap-3">
+                <span class="mt-1 w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">✓</span>
+                <p class="text-slate-700">Cédula, pasaporte o carné de migración vigente.</p>
+            </div>
+
+            <div class="flex gap-3">
+                <span class="mt-1 w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">✓</span>
+                <p class="text-slate-700">Formulario de Solicitud de Admisión de Estudios de Postgrado.</p>
+            </div>
+
+            <div class="flex gap-3">
+                <span class="mt-1 w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">✓</span>
+                <p class="text-slate-700">Certificación de conocimiento del idioma inglés.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-slate-900 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-blue-500/30 blur-3xl"></div>
+
+        <div class="relative">
+            <p class="text-sm font-black text-cyan-300 uppercase tracking-wider">
+                Para administración
+            </p>
+
+            <h2 class="mt-2 text-3xl font-black">
+                Control centralizado de solicitudes
+            </h2>
+
+            <p class="mt-4 text-slate-300">
+                El panel administrativo permite revisar aspirantes, abrir enlaces, validar documentos
+                y registrar observaciones por cada requisito.
+            </p>
+
+            <div class="mt-8 grid gap-4">
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-5">
+                    <p class="font-black">Catálogos administrables</p>
+                    <p class="text-sm text-slate-300 mt-1">
+                        Puedes agregar Facultades, Centros Regionales y Programas de Postgrado.
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-5">
+                    <p class="font-black">Estados por documento</p>
+                    <p class="text-sm text-slate-300 mt-1">
+                        Cada requisito puede marcarse como en revisión, en proceso, subsanar, aprobado o rechazado.
+                    </p>
+                </div>
+
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-5">
+                    <p class="font-black">Observaciones visibles</p>
+                    <p class="text-sm text-slate-300 mt-1">
+                        El estudiante puede ver qué debe corregir o actualizar.
+                    </p>
+                </div>
+            </div>
+
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'admisiones:panel_admin' %}" 
+                   class="mt-8 inline-flex justify-center items-center bg-white text-slate-900 px-6 py-4 rounded-2xl font-black hover:bg-slate-100 transition">
+                    Entrar al panel
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+
+<section class="mt-10 bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
+    <div class="grid lg:grid-cols-3 gap-8 items-center">
+        <div class="lg:col-span-2">
+            <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+                Aviso importante
+            </p>
+
+            <h2 class="mt-2 text-2xl md:text-3xl font-black text-slate-900">
+                La plataforma no almacena documentos
+            </h2>
+
+            <p class="mt-4 text-slate-600 leading-relaxed">
+                El aspirante debe compartir sus documentos mediante enlaces externos, como Google Drive,
+                OneDrive, Dropbox u otra plataforma autorizada. Es responsabilidad del aspirante verificar
+                que el enlace tenga permisos de visualización para que la administración pueda revisarlo.
+            </p>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-3xl p-6">
+            <p class="font-black text-blue-900">
+                Recomendación
+            </p>
+            <p class="mt-2 text-blue-800 text-sm">
+                Antes de enviar un enlace, abre la URL en una ventana privada para confirmar que se puede visualizar.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<section class="mt-10 text-center bg-gradient-to-r from-slate-900 to-blue-900 rounded-[2rem] p-8 md:p-12 text-white shadow-xl">
+    <h2 class="text-3xl md:text-4xl font-black">
+        Inicia tu proceso de admisión
+    </h2>
+
+    <p class="mt-4 text-slate-300 max-w-2xl mx-auto">
+        Crea tu cuenta, selecciona el programa de postgrado, registra los enlaces de tus documentos
+        y consulta el avance de tu solicitud.
+    </p>
+
+    <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+        {% if user.is_authenticated %}
+            {% if user.is_staff %}
+                <a href="{% url 'admisiones:panel_admin' %}" 
+                   class="bg-white text-blue-900 px-6 py-4 rounded-2xl font-black hover:bg-slate-100 transition">
+                    Ir al panel administrativo
+                </a>
+            {% else %}
+                <a href="{% url 'admisiones:estudiante_dashboard' %}" 
+                   class="bg-white text-blue-900 px-6 py-4 rounded-2xl font-black hover:bg-slate-100 transition">
+                    Ver mi solicitud
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'admisiones:registro_estudiante' %}" 
+               class="bg-white text-blue-900 px-6 py-4 rounded-2xl font-black hover:bg-slate-100 transition">
+                Crear cuenta
+            </a>
+
+            <a href="{% url 'login' %}" 
+               class="bg-white/10 border border-white/20 text-white px-6 py-4 rounded-2xl font-black hover:bg-white/20 transition">
+                Iniciar sesión
+            </a>
+        {% endif %}
+    </div>
+</section>
+
 {% endblock %}

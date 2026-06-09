@@ -1,91 +1,573 @@
 {% extends 'base.html' %}
 
-{% block title %}Mi solicitud{% endblock %}
+{% block title %}Mi solicitud | Sistema de Admisión de Postgrado{% endblock %}
 
 {% block content %}
-<div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <div>
-        <h1 class="text-3xl font-black text-slate-900">Mi solicitud de admisión</h1>
-        <p class="text-slate-600">
-            Bienvenido/a, {{ request.user.get_full_name|default:request.user.username }}.
-        </p>
+
+<!-- Encabezado -->
+<section class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 text-white shadow-2xl mb-8">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 -left-24 w-72 h-72 bg-cyan-300 rounded-full blur-3xl"></div>
     </div>
 
-    <a href="{% url 'admisiones:estudiante_perfil' %}" class="bg-white border border-slate-200 px-5 py-3 rounded-2xl font-bold hover:bg-slate-50">
-        Editar perfil
-    </a>
-</div>
+    <div class="relative px-6 py-8 md:px-10 md:py-10">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-bold backdrop-blur">
+                    <span class="w-2 h-2 rounded-full bg-green-300"></span>
+                    Panel de aspirante
+                </span>
 
-<div class="grid md:grid-cols-3 gap-5 mb-8">
-    <div class="bg-white rounded-3xl p-6 shadow border border-slate-200">
-        <p class="text-slate-500 font-semibold">Requisitos</p>
-        <p class="text-4xl font-black mt-2">{{ total }}</p>
+                <h1 class="mt-5 text-3xl md:text-5xl font-black leading-tight">
+                    Mi solicitud de admisión
+                </h1>
+
+                <p class="mt-3 text-blue-50 text-lg">
+                    Bienvenido/a, 
+                    <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>.
+                    Desde aquí puedes dar seguimiento a tus requisitos.
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a 
+                    href="{% url 'admisiones:estudiante_perfil' %}" 
+                    class="inline-flex justify-center items-center gap-2 bg-white text-blue-800 px-5 py-3 rounded-2xl font-black hover:bg-blue-50 transition shadow-xl"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125L16.875 4.5"></path>
+                    </svg>
+                    Editar perfil
+                </a>
+
+                <a 
+                    href="#requisitos" 
+                    class="inline-flex justify-center items-center gap-2 bg-white/10 border border-white/30 text-white px-5 py-3 rounded-2xl font-black hover:bg-white/20 transition backdrop-blur"
+                >
+                    Ver requisitos
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Información del perfil -->
+<section class="grid lg:grid-cols-3 gap-6 mb-8">
+
+    <div class="lg:col-span-2 bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+                <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+                    Información registrada
+                </p>
+
+                <h2 class="mt-2 text-2xl font-black text-slate-900">
+                    Datos de admisión
+                </h2>
+            </div>
+
+            <a 
+                href="{% url 'admisiones:estudiante_perfil' %}" 
+                class="inline-flex justify-center items-center bg-slate-100 text-slate-800 px-4 py-3 rounded-2xl font-bold hover:bg-slate-200 transition"
+            >
+                Actualizar datos
+            </a>
+        </div>
+
+        <div class="mt-6 grid md:grid-cols-2 gap-4 text-sm">
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Cédula / Pasaporte</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.cedula_pasaporte|default:'No indicado' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Teléfono</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.telefono|default:'No indicado' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Facultad o Centro Regional</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.centro_regional|default:'No indicado' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Programa de Postgrado</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.programa_postgrado|default:'No indicado' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Universidad de origen</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.get_universidad_origen_display }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Índice académico equivalente</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {% if profile.requiere_indice_equivalente %}
+                        Requerido
+                    {% else %}
+                        No requerido
+                    {% endif %}
+                </p>
+            </div>
+        </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 shadow border border-slate-200">
-        <p class="text-slate-500 font-semibold">Enviados</p>
-        <p class="text-4xl font-black mt-2">{{ enviados }}</p>
+
+    <!-- Resumen de avance -->
+    <div class="bg-slate-900 rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-blue-500/30 blur-3xl"></div>
+
+        <div class="relative">
+            <p class="text-sm font-black text-cyan-300 uppercase tracking-wider">
+                Resumen
+            </p>
+
+            <h2 class="mt-2 text-2xl font-black">
+                Avance general
+            </h2>
+
+            <div class="mt-6">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-sm text-slate-300">Documentos aprobados</p>
+                    <p class="font-black">{{ porcentaje_aprobado }}%</p>
+                </div>
+
+                <div class="w-full h-4 rounded-full bg-white/10 overflow-hidden">
+                    <div 
+                        class="progress-bar h-full bg-white rounded-full"
+                        data-width="{{ porcentaje_aprobado }}"
+                    ></div>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-3 gap-3">
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-4 text-center">
+                    <p class="text-3xl font-black">{{ total }}</p>
+                    <p class="text-xs text-slate-300 mt-1">Total</p>
+                </div>
+
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-4 text-center">
+                    <p class="text-3xl font-black">{{ enviados }}</p>
+                    <p class="text-xs text-slate-300 mt-1">Enviados</p>
+                </div>
+
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-4 text-center">
+                    <p class="text-3xl font-black">{{ aprobados }}</p>
+                    <p class="text-xs text-slate-300 mt-1">Aprobados</p>
+                </div>
+            </div>
+
+            <div class="mt-6 rounded-2xl bg-blue-500/20 border border-blue-300/20 p-4">
+                <p class="font-black">Estado de la solicitud</p>
+                <p class="text-sm text-slate-200 mt-1">
+                    {% if total == aprobados and total > 0 %}
+                        Todos tus requisitos han sido aprobados.
+                    {% elif enviados == 0 %}
+                        Aún no has enviado enlaces de documentos.
+                    {% else %}
+                        Tu solicitud se encuentra en proceso de revisión.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Tarjetas estadísticas -->
+<section class="grid md:grid-cols-4 gap-5 mb-8">
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-slate-500 font-bold">Requisitos</p>
+                <p class="text-4xl font-black text-slate-900 mt-2">{{ total }}</p>
+            </div>
+
+            <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+        </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 shadow border border-slate-200">
-        <p class="text-slate-500 font-semibold">Aprobados</p>
-        <p class="text-4xl font-black mt-2">{{ aprobados }}</p>
-    </div>
-</div>
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-slate-500 font-bold">Enviados</p>
+                <p class="text-4xl font-black text-blue-700 mt-2">{{ enviados }}</p>
+            </div>
 
-<div class="bg-white rounded-3xl p-6 shadow border border-slate-200 mb-8">
-    <div class="flex items-center justify-between mb-2">
-        <p class="font-bold">Progreso de aprobación</p>
-        <p class="font-black text-blue-700">{{ porcentaje_aprobado }}%</p>
+            <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-8.5"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 3l-9 9"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6"></path>
+                </svg>
+            </div>
+        </div>
     </div>
 
-    <div class="w-full h-4 rounded-full bg-slate-100 overflow-hidden">
-        <div class="progress-bar h-full bg-blue-700 rounded-full" data-width="{{ porcentaje_aprobado }}"></div>
-    </div>
-</div>
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-slate-500 font-bold">Aprobados</p>
+                <p class="text-4xl font-black text-green-700 mt-2">{{ aprobados }}</p>
+            </div>
 
-<div class="grid gap-5">
+            <div class="w-14 h-14 rounded-2xl bg-green-100 text-green-700 flex items-center justify-center">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 22a10 10 0 100-20 10 10 0 000 20z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-slate-500 font-bold">Progreso</p>
+                <p class="text-4xl font-black text-cyan-700 mt-2">{{ porcentaje_aprobado }}%</p>
+            </div>
+
+            <div class="w-14 h-14 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 4.125C16.5 3.504 17.004 3 17.625 3h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Barra de progreso de envío -->
+<section class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200 mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+        <div>
+            <h2 class="text-2xl font-black text-slate-900">
+                Progreso de documentos enviados
+            </h2>
+            <p class="text-slate-600 mt-1">
+                Este indicador muestra cuántos requisitos ya tienen un enlace registrado.
+            </p>
+        </div>
+
+        <span class="px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-black">
+            {{ porcentaje_enviado }}%
+        </span>
+    </div>
+
+    <div class="w-full h-5 rounded-full bg-slate-100 overflow-hidden">
+        <div 
+            class="progress-bar h-full bg-blue-700 rounded-full"
+            data-width="{{ porcentaje_enviado }}"
+        ></div>
+    </div>
+</section>
+
+
+<!-- Filtros -->
+<section id="requisitos" class="mb-6">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div>
+            <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+                Requisitos
+            </p>
+
+            <h2 class="mt-2 text-3xl font-black text-slate-900">
+                Documentos solicitados
+            </h2>
+
+            <p class="text-slate-600 mt-2">
+                Registra un enlace por cada requisito. La administración revisará cada documento individualmente.
+            </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+            <input 
+                type="text"
+                id="buscadorRequisitos"
+                placeholder="Buscar requisito..."
+                class="w-full sm:w-72 rounded-2xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+
+            <select 
+                id="filtroEstado"
+                class="rounded-2xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+                <option value="">Todos los estados</option>
+                <option value="Sin enviar">Sin enviar</option>
+                <option value="En revisión">En revisión</option>
+                <option value="En proceso">En proceso</option>
+                <option value="Subsanar">Subsanar</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Rechazado">Rechazado</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+
+<!-- Lista de requisitos -->
+<section class="grid gap-5" id="listaRequisitos">
     {% for entrega in entregas %}
-        <div class="bg-white rounded-3xl p-6 shadow border border-slate-200">
-            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                <div>
-                    <h2 class="text-xl font-black text-slate-900">
-                        {{ entrega.requirement.titulo }}
-                    </h2>
+        <article 
+            class="requisito-card bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200 hover:shadow-xl transition"
+            data-search="{{ entrega.requirement.titulo }} {{ entrega.requirement.descripcion }}"
+            data-estado="{{ entrega.get_estado_display }}"
+        >
+            <div class="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-6">
 
-                    <p class="text-slate-600 mt-2">
+                <div class="flex-1">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                        <span class="inline-flex w-fit px-4 py-2 rounded-full border text-sm font-black {{ entrega.badge_class }}">
+                            {{ entrega.get_estado_display }}
+                        </span>
+
+                        {% if entrega.requirement.obligatorio %}
+                            <span class="inline-flex w-fit px-4 py-2 rounded-full bg-red-50 text-red-700 border border-red-200 text-sm font-black">
+                                Obligatorio
+                            </span>
+                        {% else %}
+                            <span class="inline-flex w-fit px-4 py-2 rounded-full bg-slate-50 text-slate-700 border border-slate-200 text-sm font-black">
+                                Opcional
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <h3 class="text-xl md:text-2xl font-black text-slate-900">
+                        {{ entrega.requirement.titulo }}
+                    </h3>
+
+                    <p class="text-slate-600 mt-3 leading-relaxed">
                         {{ entrega.requirement.descripcion }}
                     </p>
 
                     {% if entrega.enlace_url %}
-                        <a href="{{ entrega.enlace_url }}" target="_blank" class="inline-flex mt-3 text-blue-700 font-bold hover:underline">
-                            Ver enlace enviado
-                        </a>
+                        <div class="mt-5 rounded-2xl bg-blue-50 border border-blue-200 p-4">
+                            <p class="text-sm font-black text-blue-900">
+                                Enlace registrado
+                            </p>
+
+                            <div class="mt-2 flex flex-col sm:flex-row sm:items-center gap-3">
+                                <a 
+                                    href="{{ entrega.enlace_url }}" 
+                                    target="_blank"
+                                    class="inline-flex items-center gap-2 text-blue-700 font-black hover:underline break-all"
+                                >
+                                    Abrir documento
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-8.5"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 3l-9 9"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6"></path>
+                                    </svg>
+                                </a>
+
+                                <button
+                                    type="button"
+                                    class="copiar-link inline-flex justify-center items-center bg-white text-blue-700 border border-blue-200 px-4 py-2 rounded-xl font-bold hover:bg-blue-100 transition"
+                                    data-url="{{ entrega.enlace_url }}"
+                                >
+                                    Copiar URL
+                                </button>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-slate-600">
+                            <p class="font-bold">
+                                Aún no has registrado enlace para este requisito.
+                            </p>
+                            <p class="text-sm mt-1">
+                                Sube tu documento a una plataforma externa y pega aquí el enlace compartido.
+                            </p>
+                        </div>
                     {% endif %}
 
                     {% if entrega.observacion_admin %}
-                        <div class="mt-4 bg-orange-50 border border-orange-200 text-orange-800 rounded-2xl p-4">
-                            <p class="font-bold">Observación:</p>
-                            <p>{{ entrega.observacion_admin }}</p>
+                        <div class="mt-5 rounded-2xl bg-orange-50 border border-orange-200 text-orange-800 p-4">
+                            <p class="font-black">Observación de administración</p>
+                            <p class="mt-1">
+                                {{ entrega.observacion_admin }}
+                            </p>
                         </div>
+                    {% endif %}
+
+                    {% if entrega.enviado_en %}
+                        <p class="text-xs text-slate-400 mt-4">
+                            Enviado el {{ entrega.enviado_en|date:"d/m/Y H:i" }}
+                        </p>
                     {% endif %}
                 </div>
 
-                <div class="min-w-48 flex flex-col gap-3">
-                    <span class="text-center px-4 py-2 rounded-full border text-sm font-bold {{ entrega.badge_class }}">
-                        {{ entrega.get_estado_display }}
-                    </span>
+                <div class="w-full xl:w-72 flex flex-col gap-3">
+                    <a 
+                        href="{% url 'admisiones:subir_enlace' entrega.id %}" 
+                        class="inline-flex justify-center items-center gap-2 bg-blue-700 text-white px-5 py-4 rounded-2xl font-black hover:bg-blue-800 transition shadow-lg shadow-blue-100"
+                    >
+                        {% if entrega.enlace_url %}
+                            Actualizar URL
+                        {% else %}
+                            Añadir URL
+                        {% endif %}
 
-                    <a href="{% url 'admisiones:subir_enlace' entrega.id %}" class="text-center bg-blue-700 text-white px-4 py-3 rounded-2xl font-bold hover:bg-blue-800">
-                        Añadir / actualizar URL
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-8.5"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 3l-9 9"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6"></path>
+                        </svg>
                     </a>
+
+                    {% if entrega.estado == 'SUBSANAR' %}
+                        <div class="rounded-2xl bg-orange-50 border border-orange-200 text-orange-800 p-4">
+                            <p class="font-black text-sm">Acción requerida</p>
+                            <p class="text-sm mt-1">
+                                Debes revisar la observación y actualizar el enlace.
+                            </p>
+                        </div>
+                    {% elif entrega.estado == 'APROBADO' %}
+                        <div class="rounded-2xl bg-green-50 border border-green-200 text-green-800 p-4">
+                            <p class="font-black text-sm">Validado</p>
+                            <p class="text-sm mt-1">
+                                Este requisito ya fue aprobado.
+                            </p>
+                        </div>
+                    {% elif entrega.estado == 'EN_REVISION' %}
+                        <div class="rounded-2xl bg-blue-50 border border-blue-200 text-blue-800 p-4">
+                            <p class="font-black text-sm">En revisión</p>
+                            <p class="text-sm mt-1">
+                                La administración verificará tu enlace.
+                            </p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-        </div>
+        </article>
     {% empty %}
-        <div class="bg-white rounded-3xl p-8 text-center border border-slate-200">
-            No hay requisitos activos.
+        <div class="bg-white rounded-[2rem] p-10 text-center border border-slate-200 shadow-sm">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+
+            <h3 class="mt-5 text-2xl font-black text-slate-900">
+                No hay requisitos activos
+            </h3>
+
+            <p class="text-slate-600 mt-2">
+                Por el momento no existen documentos solicitados para tu perfil.
+            </p>
         </div>
     {% endfor %}
-</div>
+</section>
+
+
+<!-- Aviso final -->
+<section class="mt-8 bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
+    <div class="flex flex-col md:flex-row md:items-center gap-5">
+        <div class="w-14 h-14 rounded-2xl bg-yellow-100 text-yellow-700 flex items-center justify-center shrink-0">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+            </svg>
+        </div>
+
+        <div>
+            <h3 class="text-xl font-black text-slate-900">
+                Antes de enviar un enlace
+            </h3>
+
+            <p class="text-slate-600 mt-1">
+                Verifica que el documento tenga permisos de visualización. Puedes probarlo abriendo el enlace
+                en una ventana privada del navegador antes de enviarlo.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const progressBars = document.querySelectorAll('.progress-bar');
+
+    progressBars.forEach(function (bar) {
+        const width = bar.dataset.width || 0;
+        bar.style.width = '0%';
+
+        setTimeout(function () {
+            bar.style.transition = 'width 700ms ease';
+            bar.style.width = width + '%';
+        }, 150);
+    });
+
+    const buscador = document.getElementById('buscadorRequisitos');
+    const filtroEstado = document.getElementById('filtroEstado');
+    const cards = document.querySelectorAll('.requisito-card');
+
+    function filtrarRequisitos() {
+        const texto = buscador ? buscador.value.toLowerCase().trim() : '';
+        const estado = filtroEstado ? filtroEstado.value : '';
+
+        cards.forEach(function (card) {
+            const contenido = card.dataset.search.toLowerCase();
+            const estadoCard = card.dataset.estado;
+
+            const coincideTexto = contenido.includes(texto);
+            const coincideEstado = !estado || estadoCard === estado;
+
+            if (coincideTexto && coincideEstado) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+    }
+
+    if (buscador) {
+        buscador.addEventListener('input', filtrarRequisitos);
+    }
+
+    if (filtroEstado) {
+        filtroEstado.addEventListener('change', filtrarRequisitos);
+    }
+
+    const botonesCopiar = document.querySelectorAll('.copiar-link');
+
+    botonesCopiar.forEach(function (boton) {
+        boton.addEventListener('click', async function () {
+            const url = boton.dataset.url;
+            const textoOriginal = boton.textContent;
+
+            try {
+                await navigator.clipboard.writeText(url);
+                boton.textContent = 'URL copiada';
+
+                setTimeout(function () {
+                    boton.textContent = textoOriginal;
+                }, 1500);
+            } catch (error) {
+                alert('No se pudo copiar el enlace.');
+            }
+        });
+    });
+});
+</script>
+
 {% endblock %}

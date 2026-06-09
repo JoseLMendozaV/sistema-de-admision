@@ -2,6 +2,51 @@ from django.conf import settings
 from django.db import models
 
 
+
+class AcademicUnit(models.Model):
+    FACULTAD = 'FACULTAD'
+    CENTRO_REGIONAL = 'CENTRO_REGIONAL'
+
+    TIPO_CHOICES = [
+        (FACULTAD, 'Facultad'),
+        (CENTRO_REGIONAL, 'Centro Regional'),
+    ]
+
+    nombre = models.CharField(max_length=200, unique=True)
+    tipo = models.CharField(max_length=30, choices=TIPO_CHOICES)
+    activo = models.BooleanField(default=True)
+    orden = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ['orden', 'nombre']
+        verbose_name = 'Facultad o Centro Regional'
+        verbose_name_plural = 'Facultades y Centros Regionales'
+
+    def __str__(self):
+        return f'{self.nombre}'
+
+
+class GraduateProgram(models.Model):
+    unidad_academica = models.ForeignKey(
+        AcademicUnit,
+        on_delete=models.CASCADE,
+        related_name='programas'
+    )
+
+    nombre = models.CharField(max_length=250)
+    activo = models.BooleanField(default=True)
+    orden = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ['unidad_academica__nombre', 'orden', 'nombre']
+        verbose_name = 'Programa de Postgrado'
+        verbose_name_plural = 'Programas de Postgrado'
+        unique_together = ('unidad_academica', 'nombre')
+
+    def __str__(self):
+        return f'{self.nombre}'
+
+
 class StudentProfile(models.Model):
     UTP = 'UTP'
     OTRA = 'OTRA'
@@ -19,8 +64,25 @@ class StudentProfile(models.Model):
 
     cedula_pasaporte = models.CharField(max_length=50, blank=True)
     telefono = models.CharField(max_length=30, blank=True)
-    programa_postgrado = models.CharField(max_length=200, blank=True)
-    centro_regional = models.CharField(max_length=150, blank=True)
+    centro_regional = models.ForeignKey(
+    AcademicUnit,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name='estudiantes',
+    verbose_name='Facultad o Centro Regional'
+    )
+
+    programa_postgrado = models.ForeignKey(
+        GraduateProgram,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='estudiantes',
+        verbose_name='Programa de postgrado'
+    )
+
+
 
     universidad_origen = models.CharField(
         max_length=10,

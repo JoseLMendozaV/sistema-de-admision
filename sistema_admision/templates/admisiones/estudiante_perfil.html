@@ -1,49 +1,509 @@
 {% extends 'base.html' %}
 
-{% block title %}Perfil de admisión{% endblock %}
+{% block title %}Perfil de admisión | Sistema de Admisión de Postgrado{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
-    <h1 class="text-3xl font-black text-slate-900">Perfil de admisión</h1>
-    <p class="text-slate-600 mt-2">
-        Complete su información general. Esto permitirá mostrar los requisitos que aplican a su caso.
-    </p>
 
-    <form method="post" class="mt-6 space-y-5">
-        {% csrf_token %}
+<!-- Encabezado -->
+<section class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 text-white shadow-2xl mb-8">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 -left-24 w-72 h-72 bg-cyan-300 rounded-full blur-3xl"></div>
+    </div>
 
-        {% for field in form %}
+    <div class="relative px-6 py-8 md:px-10 md:py-10">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
-                <label class="block font-semibold mb-2">{{ field.label }}</label>
+                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-bold backdrop-blur">
+                    <span class="w-2 h-2 rounded-full bg-green-300"></span>
+                    Información del aspirante
+                </span>
 
-                {% if field.field.widget.input_type == 'checkbox' %}
-                    <div class="flex items-center gap-3">
-                        {{ field }}
-                        <span class="text-slate-600 text-sm">Sí</span>
-                    </div>
-                {% else %}
-                    {{ field }}
-                {% endif %}
+                <h1 class="mt-5 text-3xl md:text-5xl font-black leading-tight">
+                    Perfil de admisión
+                </h1>
 
-                {% if field.help_text %}
-                    <p class="text-sm text-slate-500 mt-1">{{ field.help_text }}</p>
-                {% endif %}
-
-                {% if field.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ field.errors|striptags }}</p>
-                {% endif %}
+                <p class="mt-3 text-blue-50 text-lg max-w-3xl">
+                    Completa tus datos generales para que el sistema pueda mostrar los requisitos que aplican a tu caso.
+                </p>
             </div>
-        {% endfor %}
 
-        <div class="flex gap-3">
-            <button class="bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-800">
-                Guardar perfil
-            </button>
+            <div class="bg-white/10 border border-white/20 rounded-3xl p-5 backdrop-blur min-w-72">
+                <p class="text-sm text-blue-100 font-bold">Aspirante</p>
+                <p class="font-black text-xl">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </p>
 
-            <a href="{% url 'admisiones:estudiante_dashboard' %}" class="bg-slate-100 text-slate-800 px-6 py-3 rounded-2xl font-bold hover:bg-slate-200">
-                Volver
-            </a>
+                <p class="text-sm text-blue-100 font-bold mt-4">Correo</p>
+                <p class="font-black break-all">
+                    {{ request.user.email|default:'No indicado' }}
+                </p>
+            </div>
         </div>
-    </form>
+    </div>
+</section>
+
+
+<div class="grid lg:grid-cols-3 gap-8">
+
+    <!-- Formulario principal -->
+    <section class="lg:col-span-2 bg-white rounded-[2rem] shadow-xl border border-slate-200 p-6 md:p-8">
+        <div class="mb-8">
+            <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+                Datos requeridos
+            </p>
+
+            <h2 class="mt-2 text-3xl font-black text-slate-900">
+                Información de admisión
+            </h2>
+
+            <p class="mt-3 text-slate-600">
+                Selecciona la Facultad o Centro Regional, el programa de postgrado y completa tu información personal.
+            </p>
+        </div>
+
+        <form 
+            method="post" 
+            class="space-y-6" 
+            id="formPerfil" 
+            data-programas-url="{% url 'admisiones:programas_por_unidad' %}"
+            novalidate
+        >
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-5 py-4">
+                    <p class="font-black">Revisa la información ingresada</p>
+                    <div class="text-sm mt-1">
+                        {{ form.non_field_errors }}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Datos personales -->
+            <div>
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-11 h-11 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 00-8 0v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900">
+                            Datos personales
+                        </h3>
+                        <p class="text-sm text-slate-500">
+                            Información básica de contacto e identificación.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="{{ form.cedula_pasaporte.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                            {{ form.cedula_pasaporte.label }}
+                        </label>
+
+                        {{ form.cedula_pasaporte }}
+
+                        {% if form.cedula_pasaporte.errors %}
+                            <p class="text-red-600 text-sm mt-1">
+                                {{ form.cedula_pasaporte.errors|striptags }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.telefono.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                            {{ form.telefono.label }}
+                        </label>
+
+                        {{ form.telefono }}
+
+                        {% if form.telefono.errors %}
+                            <p class="text-red-600 text-sm mt-1">
+                                {{ form.telefono.errors|striptags }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Información académica -->
+            <div class="pt-6 border-t border-slate-200">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-11 h-11 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0118.5 15c0 2.485-2.91 4.5-6.5 4.5S5.5 17.485 5.5 15c0-1.52.56-3.036.34-4.422L12 14z"></path>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900">
+                            Programa de admisión
+                        </h3>
+                        <p class="text-sm text-slate-500">
+                            Selecciona la unidad académica y el programa al que deseas aplicar.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="{{ form.centro_regional.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                            {{ form.centro_regional.label }}
+                        </label>
+
+                        {{ form.centro_regional }}
+
+                        <p class="text-xs text-slate-500 mt-1">
+                            Primero selecciona la Facultad o Centro Regional.
+                        </p>
+
+                        {% if form.centro_regional.errors %}
+                            <p class="text-red-600 text-sm mt-1">
+                                {{ form.centro_regional.errors|striptags }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.programa_postgrado.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                            {{ form.programa_postgrado.label }}
+                        </label>
+
+                        {{ form.programa_postgrado }}
+
+                        <p class="text-xs text-slate-500 mt-1">
+                            Los programas se cargan según la unidad académica seleccionada.
+                        </p>
+
+                        {% if form.programa_postgrado.errors %}
+                            <p class="text-red-600 text-sm mt-1">
+                                {{ form.programa_postgrado.errors|striptags }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Universidad de origen -->
+            <div class="pt-6 border-t border-slate-200">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-11 h-11 rounded-2xl bg-green-100 text-green-700 flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 6l7.5 4.5"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 10.5v7.125c0 .621.504 1.125 1.125 1.125h11.25c.621 0 1.125-.504 1.125-1.125V10.5"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 21V12h6v9"></path>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900">
+                            Universidad de origen
+                        </h3>
+                        <p class="text-sm text-slate-500">
+                            Esta información define si se requiere Índice Académico Equivalente.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="{{ form.universidad_origen.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                            {{ form.universidad_origen.label }}
+                        </label>
+
+                        {{ form.universidad_origen }}
+
+                        {% if form.universidad_origen.errors %}
+                            <p class="text-red-600 text-sm mt-1">
+                                {{ form.universidad_origen.errors|striptags }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.nombre_universidad_origen.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                            {{ form.nombre_universidad_origen.label }}
+                        </label>
+
+                        {{ form.nombre_universidad_origen }}
+
+                        <p class="text-xs text-slate-500 mt-1">
+                            Si estudiaste en la UTP, puedes dejarlo vacío o escribir UTP.
+                        </p>
+
+                        {% if form.nombre_universidad_origen.errors %}
+                            <p class="text-red-600 text-sm mt-1">
+                                {{ form.nombre_universidad_origen.errors|striptags }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-5 rounded-2xl bg-yellow-50 border border-yellow-200 text-yellow-800 p-5">
+                    <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+                        <div class="shrink-0 w-11 h-11 rounded-2xl bg-yellow-100 text-yellow-700 flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                            </svg>
+                        </div>
+
+                        <div class="flex-1">
+                            <p class="font-black">Sistema de calificación diferente</p>
+
+                            <p class="text-sm mt-1">
+                                Marca esta opción si vienes de una universidad cuyo sistema de calificación es diferente
+                                al de la Universidad Tecnológica de Panamá.
+                            </p>
+
+                            <label class="mt-4 flex items-center gap-3 cursor-pointer">
+                                {{ form.sistema_calificacion_diferente }}
+                                <span class="font-bold">
+                                    {{ form.sistema_calificacion_diferente.label }}
+                                </span>
+                            </label>
+
+                            {% if form.sistema_calificacion_diferente.errors %}
+                                <p class="text-red-600 text-sm mt-1">
+                                    {{ form.sistema_calificacion_diferente.errors|striptags }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Acciones -->
+            <div class="pt-6 border-t border-slate-200">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button 
+                        type="submit"
+                        class="inline-flex justify-center items-center gap-2 bg-blue-700 text-white px-6 py-4 rounded-2xl font-black hover:bg-blue-800 transition shadow-lg shadow-blue-200"
+                    >
+                        Guardar perfil
+
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 22a10 10 0 100-20 10 10 0 000 20z"></path>
+                        </svg>
+                    </button>
+
+                    <a 
+                        href="{% url 'admisiones:estudiante_dashboard' %}" 
+                        class="inline-flex justify-center items-center bg-slate-100 text-slate-800 px-6 py-4 rounded-2xl font-black hover:bg-slate-200 transition"
+                    >
+                        Volver a mi solicitud
+                    </a>
+                </div>
+            </div>
+        </form>
+    </section>
+
+
+    <!-- Panel lateral -->
+    <aside class="space-y-6">
+        <div class="bg-slate-900 rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-blue-500/30 blur-3xl"></div>
+
+            <div class="relative">
+                <p class="text-sm font-black text-cyan-300 uppercase tracking-wider">
+                    Estado del perfil
+                </p>
+
+                <h2 class="mt-2 text-2xl font-black">
+                    Datos necesarios
+                </h2>
+
+                <div class="mt-6 space-y-3">
+                    <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+                        <p class="font-black">Identificación</p>
+                        <p class="text-sm text-slate-300 mt-1">
+                            Cédula, pasaporte o carné de migración.
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+                        <p class="font-black">Programa</p>
+                        <p class="text-sm text-slate-300 mt-1">
+                            Facultad, Centro Regional y programa de postgrado.
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+                        <p class="font-black">Universidad de origen</p>
+                        <p class="text-sm text-slate-300 mt-1">
+                            Permite saber si aplica el Índice Académico Equivalente.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
+            <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center mb-5">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 22a10 10 0 100-20 10 10 0 000 20z"></path>
+                </svg>
+            </div>
+
+            <h3 class="text-xl font-black text-slate-900">
+                Después de guardar
+            </h3>
+
+            <p class="mt-3 text-slate-600">
+                El sistema actualizará automáticamente los requisitos que debes presentar según la información registrada.
+            </p>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
+            <div class="w-14 h-14 rounded-2xl bg-yellow-100 text-yellow-700 flex items-center justify-center mb-5">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                </svg>
+            </div>
+
+            <h3 class="text-xl font-black text-slate-900">
+                Importante
+            </h3>
+
+            <p class="mt-3 text-slate-600">
+                Si seleccionas una universidad con sistema de calificación diferente al de la UTP, aparecerá el requisito de Certificación de Índice Académico Equivalente.
+            </p>
+        </div>
+    </aside>
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const formPerfil = document.getElementById('formPerfil');
+    const unidadSelect = document.getElementById('id_centro_regional');
+    const programaSelect = document.getElementById('id_programa_postgrado');
+
+    if (!formPerfil) {
+        console.error('No se encontró el formulario con id="formPerfil".');
+        return;
+    }
+
+    if (!unidadSelect) {
+        console.error('No se encontró el select con id="id_centro_regional".');
+        return;
+    }
+
+    if (!programaSelect) {
+        console.error('No se encontró el select con id="id_programa_postgrado".');
+        return;
+    }
+
+    const programasUrl = formPerfil.dataset.programasUrl;
+
+    async function cargarProgramas(unidadId, programaSeleccionado = null) {
+        programaSelect.innerHTML = '';
+        programaSelect.disabled = true;
+
+        const cargando = document.createElement('option');
+        cargando.value = '';
+        cargando.textContent = 'Cargando programas...';
+        programaSelect.appendChild(cargando);
+
+        if (!unidadId) {
+            programaSelect.innerHTML = '';
+
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'Seleccione primero la Facultad o Centro Regional';
+            programaSelect.appendChild(option);
+
+            programaSelect.disabled = true;
+            return;
+        }
+
+        try {
+            const response = await fetch(`${programasUrl}?unidad_id=${unidadId}`);
+
+            if (!response.ok) {
+                throw new Error('Error HTTP: ' + response.status);
+            }
+
+            const data = await response.json();
+
+            programaSelect.innerHTML = '';
+
+            const optionInicial = document.createElement('option');
+            optionInicial.value = '';
+            optionInicial.textContent = 'Seleccione un programa';
+            programaSelect.appendChild(optionInicial);
+
+            if (!data.programas || data.programas.length === 0) {
+                const optionVacio = document.createElement('option');
+                optionVacio.value = '';
+                optionVacio.textContent = 'No hay programas disponibles para esta opción';
+                programaSelect.appendChild(optionVacio);
+
+                programaSelect.disabled = true;
+                return;
+            }
+
+            data.programas.forEach(function (programa) {
+                const option = document.createElement('option');
+                option.value = programa.id;
+                option.textContent = programa.nombre;
+
+                if (
+                    programaSeleccionado &&
+                    String(programa.id) === String(programaSeleccionado)
+                ) {
+                    option.selected = true;
+                }
+
+                programaSelect.appendChild(option);
+            });
+
+            programaSelect.disabled = false;
+
+        } catch (error) {
+            console.error('Error al cargar programas:', error);
+
+            programaSelect.innerHTML = '';
+
+            const optionError = document.createElement('option');
+            optionError.value = '';
+            optionError.textContent = 'Error al cargar programas';
+            programaSelect.appendChild(optionError);
+
+            programaSelect.disabled = true;
+        }
+    }
+
+    unidadSelect.addEventListener('change', function () {
+        cargarProgramas(unidadSelect.value);
+    });
+
+    if (unidadSelect.value) {
+        const programaActual = programaSelect.value;
+        cargarProgramas(unidadSelect.value, programaActual);
+    } else {
+        programaSelect.innerHTML = '';
+
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Seleccione primero la Facultad o Centro Regional';
+        programaSelect.appendChild(option);
+
+        programaSelect.disabled = true;
+    }
+});
+</script>
+
 {% endblock %}

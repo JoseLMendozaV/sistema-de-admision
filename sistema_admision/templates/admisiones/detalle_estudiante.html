@@ -1,92 +1,500 @@
 {% extends 'base.html' %}
 
-{% block title %}Detalle del estudiante{% endblock %}
+{% block title %}Detalle del estudiante | Sistema de Admisión de Postgrado{% endblock %}
 
 {% block content %}
+
+<!-- Botón volver -->
 <div class="mb-6">
-    <a href="{% url 'admisiones:panel_admin' %}" class="text-blue-700 font-bold hover:underline">
-        ← Volver al panel
+    <a 
+        href="{% url 'admisiones:panel_admin' %}" 
+        class="inline-flex items-center gap-2 text-blue-700 font-black hover:underline"
+    >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Volver al panel administrativo
     </a>
 </div>
 
-<div class="bg-white rounded-3xl shadow border border-slate-200 p-6 mb-8">
-    <h1 class="text-3xl font-black text-slate-900">
-        {{ profile.user.get_full_name|default:profile.user.username }}
-    </h1>
 
-    <div class="grid md:grid-cols-2 gap-4 mt-5 text-sm">
-        <p><strong>Correo:</strong> {{ profile.user.email }}</p>
-        <p><strong>Cédula / Pasaporte:</strong> {{ profile.cedula_pasaporte|default:'No indicado' }}</p>
-        <p><strong>Teléfono:</strong> {{ profile.telefono|default:'No indicado' }}</p>
-        <p><strong>Programa:</strong> {{ profile.programa_postgrado|default:'No indicado' }}</p>
-        <p><strong>Facultad o Centro Regional:</strong> {{ profile.centro_regional|default:'No indicado' }}</p>
-        <p><strong>Universidad de origen:</strong> {{ profile.get_universidad_origen_display }}</p>
-        <p><strong>Nombre universidad origen:</strong> {{ profile.nombre_universidad_origen|default:'No indicado' }}</p>
-        <p><strong>Sistema calificación diferente:</strong> {% if profile.sistema_calificacion_diferente %}Sí{% else %}No{% endif %}</p>
+<!-- Encabezado del estudiante -->
+<section class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-900 via-blue-900 to-cyan-700 text-white shadow-2xl mb-8">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 -left-24 w-72 h-72 bg-cyan-300 rounded-full blur-3xl"></div>
     </div>
-</div>
 
-<div class="grid gap-6">
+    <div class="relative px-6 py-8 md:px-10 md:py-10">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-bold backdrop-blur">
+                    <span class="w-2 h-2 rounded-full bg-green-300"></span>
+                    Revisión administrativa
+                </span>
+
+                <h1 class="mt-5 text-3xl md:text-5xl font-black leading-tight">
+                    {{ profile.user.get_full_name|default:profile.user.username }}
+                </h1>
+
+                <p class="mt-3 text-blue-50 text-lg">
+                    Revisión de requisitos, enlaces enviados y observaciones del aspirante.
+                </p>
+            </div>
+
+            <div class="bg-white/10 border border-white/20 rounded-3xl p-5 backdrop-blur min-w-72">
+                <p class="text-sm text-blue-100 font-bold">Correo electrónico</p>
+                <p class="font-black break-all">
+                    {{ profile.user.email|default:'No indicado' }}
+                </p>
+
+                <div class="mt-4">
+                    <p class="text-sm text-blue-100 font-bold">Tipo de usuario</p>
+                    <p class="font-black">Aspirante</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Datos del perfil -->
+<section class="grid lg:grid-cols-3 gap-6 mb-8">
+    <div class="lg:col-span-2 bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+                <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+                    Información del aspirante
+                </p>
+
+                <h2 class="mt-2 text-2xl font-black text-slate-900">
+                    Datos registrados
+                </h2>
+            </div>
+
+            <span class="inline-flex w-fit px-4 py-2 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-sm font-black">
+                Perfil de admisión
+            </span>
+        </div>
+
+        <div class="mt-6 grid md:grid-cols-2 gap-4 text-sm">
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Cédula / Pasaporte</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.cedula_pasaporte|default:'No indicado' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Teléfono</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.telefono|default:'No indicado' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Facultad o Centro Regional</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.centro_regional|default:'No indicado' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Programa de Postgrado</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.programa_postgrado|default:'No indicado' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Universidad de origen</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.get_universidad_origen_display }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <p class="text-slate-500 font-semibold">Universidad indicada</p>
+                <p class="font-black text-slate-900 mt-1">
+                    {{ profile.nombre_universidad_origen|default:'No indicado' }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-slate-900 rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-blue-500/30 blur-3xl"></div>
+
+        <div class="relative">
+            <p class="text-sm font-black text-cyan-300 uppercase tracking-wider">
+                Validación especial
+            </p>
+
+            <h2 class="mt-2 text-2xl font-black">
+                Índice equivalente
+            </h2>
+
+            <div class="mt-6 rounded-2xl bg-white/10 border border-white/10 p-5">
+                <p class="text-sm text-slate-300">¿Sistema de calificación diferente?</p>
+                <p class="mt-1 text-2xl font-black">
+                    {% if profile.sistema_calificacion_diferente %}
+                        Sí
+                    {% else %}
+                        No
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="mt-4 rounded-2xl 
+                {% if profile.requiere_indice_equivalente %}
+                    bg-yellow-500/20 border border-yellow-300/20
+                {% else %}
+                    bg-green-500/20 border border-green-300/20
+                {% endif %}
+                p-5"
+            >
+                <p class="font-black">
+                    {% if profile.requiere_indice_equivalente %}
+                        Requisito requerido
+                    {% else %}
+                        No requerido
+                    {% endif %}
+                </p>
+
+                <p class="text-sm text-slate-200 mt-1">
+                    {% if profile.requiere_indice_equivalente %}
+                        Este aspirante debe presentar la Certificación de Índice Académico Equivalente.
+                    {% else %}
+                        Según los datos registrados, no requiere índice académico equivalente.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Buscador -->
+<section class="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 mb-8">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div>
+            <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+                Documentos del aspirante
+            </p>
+
+            <h2 class="mt-2 text-3xl font-black text-slate-900">
+                Revisión de requisitos
+            </h2>
+
+            <p class="text-slate-600 mt-2">
+                Abra los enlaces enviados, cambie el estado de cada requisito y registre observaciones visibles para el estudiante.
+            </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+            <input 
+                type="text"
+                id="buscadorDocumentos"
+                placeholder="Buscar requisito..."
+                class="w-full sm:w-72 rounded-2xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+
+            <select 
+                id="filtroEstadoAdmin"
+                class="rounded-2xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+                <option value="">Todos los estados</option>
+                <option value="Sin enviar">Sin enviar</option>
+                <option value="En revisión">En revisión</option>
+                <option value="En proceso">En proceso</option>
+                <option value="Subsanar">Subsanar</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Rechazado">Rechazado</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+
+<!-- Lista de documentos -->
+<section class="grid gap-6" id="listaDocumentos">
     {% for entrega in entregas %}
-        <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
-            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-                <div class="flex-1">
-                    <h2 class="text-xl font-black text-slate-900">
-                        {{ entrega.requirement.titulo }}
-                    </h2>
+        <article 
+            class="documento-card bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 hover:shadow-xl transition"
+            data-search="{{ entrega.requirement.titulo }} {{ entrega.requirement.descripcion }}"
+            data-estado="{{ entrega.get_estado_display }}"
+        >
+            <div class="grid xl:grid-cols-3 gap-6">
 
-                    <p class="text-slate-600 mt-2">
+                <!-- Información del requisito -->
+                <div class="xl:col-span-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                        <span class="inline-flex w-fit px-4 py-2 rounded-full border text-sm font-black {{ entrega.badge_class }}">
+                            {{ entrega.get_estado_display }}
+                        </span>
+
+                        {% if entrega.requirement.obligatorio %}
+                            <span class="inline-flex w-fit px-4 py-2 rounded-full bg-red-50 text-red-700 border border-red-200 text-sm font-black">
+                                Obligatorio
+                            </span>
+                        {% else %}
+                            <span class="inline-flex w-fit px-4 py-2 rounded-full bg-slate-50 text-slate-700 border border-slate-200 text-sm font-black">
+                                Opcional
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <h3 class="text-xl md:text-2xl font-black text-slate-900">
+                        {{ entrega.requirement.titulo }}
+                    </h3>
+
+                    <p class="mt-3 text-slate-600 leading-relaxed">
                         {{ entrega.requirement.descripcion }}
                     </p>
 
-                    <div class="mt-4">
-                        <span class="px-4 py-2 rounded-full border text-sm font-bold {{ entrega.badge_class }}">
-                            {{ entrega.get_estado_display }}
-                        </span>
-                    </div>
-
                     {% if entrega.enlace_url %}
-                        <div class="mt-4 flex flex-wrap gap-3">
-                            <a href="{{ entrega.enlace_url }}" target="_blank" class="bg-slate-900 text-white px-4 py-3 rounded-2xl font-bold hover:bg-slate-700">
-                                Abrir documento
-                            </a>
+                        <div class="mt-5 rounded-2xl bg-blue-50 border border-blue-200 p-4">
+                            <p class="font-black text-blue-900">
+                                Enlace enviado por el estudiante
+                            </p>
 
-                            <button
-                                type="button"
-                                class="copiar-link bg-slate-100 text-slate-800 px-4 py-3 rounded-2xl font-bold hover:bg-slate-200"
-                                data-url="{{ entrega.enlace_url }}"
-                            >
-                                Copiar enlace
-                            </button>
+                            <div class="mt-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                                <a 
+                                    href="{{ entrega.enlace_url }}" 
+                                    target="_blank"
+                                    class="inline-flex justify-center items-center gap-2 bg-blue-700 text-white px-5 py-3 rounded-2xl font-black hover:bg-blue-800 transition"
+                                >
+                                    Abrir documento
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-8.5"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 3l-9 9"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6"></path>
+                                    </svg>
+                                </a>
+
+                                <button
+                                    type="button"
+                                    class="copiar-link inline-flex justify-center items-center bg-white text-blue-700 border border-blue-200 px-5 py-3 rounded-2xl font-bold hover:bg-blue-100 transition"
+                                    data-url="{{ entrega.enlace_url }}"
+                                >
+                                    Copiar URL
+                                </button>
+                            </div>
+
+                            <p class="mt-3 text-sm text-blue-800 break-all">
+                                {{ entrega.enlace_url }}
+                            </p>
                         </div>
                     {% else %}
-                        <div class="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-4 text-gray-600">
-                            El estudiante aún no ha enviado enlace para este requisito.
+                        <div class="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-slate-600">
+                            <p class="font-black text-slate-800">
+                                Sin enlace registrado
+                            </p>
+                            <p class="text-sm mt-1">
+                                El aspirante aún no ha enviado un enlace para este requisito.
+                            </p>
                         </div>
                     {% endif %}
+
+                    {% if entrega.observacion_admin %}
+                        <div class="mt-5 rounded-2xl bg-orange-50 border border-orange-200 text-orange-800 p-4">
+                            <p class="font-black">Observación actual</p>
+                            <p class="mt-1">
+                                {{ entrega.observacion_admin }}
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-5 grid sm:grid-cols-2 gap-3 text-xs text-slate-500">
+                        <div class="rounded-2xl bg-slate-50 border border-slate-200 p-3">
+                            <p class="font-bold text-slate-600">Fecha de envío</p>
+                            <p>
+                                {% if entrega.enviado_en %}
+                                    {{ entrega.enviado_en|date:"d/m/Y H:i" }}
+                                {% else %}
+                                    No enviado
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class="rounded-2xl bg-slate-50 border border-slate-200 p-3">
+                            <p class="font-bold text-slate-600">Última actualización</p>
+                            <p>{{ entrega.actualizado_en|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
                 </div>
 
-                <form method="post" action="{% url 'admisiones:revisar_entrega' entrega.id %}" class="w-full lg:w-96 bg-slate-50 rounded-2xl p-5 border border-slate-200">
-                    {% csrf_token %}
 
-                    <label class="block font-semibold mb-2">Estado</label>
-                    <select name="estado" class="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        {% for value, label in entrega.STATUS_CHOICES %}
-                            <option value="{{ value }}" {% if entrega.estado == value %}selected{% endif %}>
-                                {{ label }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                <!-- Formulario de revisión -->
+                <div class="xl:col-span-1">
+                    <form 
+                        method="post" 
+                        action="{% url 'admisiones:revisar_entrega' entrega.id %}" 
+                        class="bg-slate-50 rounded-[1.5rem] p-5 border border-slate-200 sticky top-28"
+                    >
+                        {% csrf_token %}
 
-                    <label class="block font-semibold mb-2">Observación</label>
-                    <textarea name="observacion_admin" rows="4" class="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ entrega.observacion_admin }}</textarea>
+                        <div class="mb-5">
+                            <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+                                Revisión
+                            </p>
 
-                    <button class="w-full bg-blue-700 text-white py-3 rounded-2xl font-bold hover:bg-blue-800">
-                        Guardar revisión
-                    </button>
-                </form>
+                            <h4 class="text-xl font-black text-slate-900 mt-1">
+                                Actualizar estado
+                            </h4>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block font-bold text-slate-700 mb-2">
+                                Estado del requisito
+                            </label>
+
+                            <select 
+                                name="estado" 
+                                class="w-full rounded-2xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            >
+                                {% for value, label in entrega.STATUS_CHOICES %}
+                                    <option value="{{ value }}" {% if entrega.estado == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block font-bold text-slate-700 mb-2">
+                                Observación para el estudiante
+                            </label>
+
+                            <textarea 
+                                name="observacion_admin" 
+                                rows="5" 
+                                placeholder="Ejemplo: El enlace no tiene permisos de visualización. Por favor, actualizar."
+                                class="w-full rounded-2xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            >{{ entrega.observacion_admin }}</textarea>
+
+                            <p class="text-xs text-slate-500 mt-2">
+                                Esta observación será visible para el estudiante.
+                            </p>
+                        </div>
+
+                        <button 
+                            type="submit"
+                            class="w-full inline-flex justify-center items-center gap-2 bg-blue-700 text-white px-5 py-4 rounded-2xl font-black hover:bg-blue-800 transition shadow-lg shadow-blue-100"
+                        >
+                            Guardar revisión
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 22a10 10 0 100-20 10 10 0 000 20z"></path>
+                            </svg>
+                        </button>
+
+                        {% if entrega.revisado_por %}
+                            <p class="text-xs text-slate-500 mt-4 text-center">
+                                Revisado por: {{ entrega.revisado_por.get_full_name|default:entrega.revisado_por.username }}
+                            </p>
+                        {% endif %}
+                    </form>
+                </div>
             </div>
+        </article>
+    {% empty %}
+        <div class="bg-white rounded-[2rem] p-10 text-center border border-slate-200 shadow-sm">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+
+            <h3 class="mt-5 text-2xl font-black text-slate-900">
+                No hay requisitos disponibles
+            </h3>
+
+            <p class="text-slate-600 mt-2">
+                El sistema no encontró documentos asociados a este aspirante.
+            </p>
         </div>
     {% endfor %}
-</div>
+</section>
+
+
+<!-- Aviso administrativo -->
+<section class="mt-8 bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
+    <div class="flex flex-col md:flex-row md:items-center gap-5">
+        <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 22a10 10 0 100-20 10 10 0 000 20z"></path>
+            </svg>
+        </div>
+
+        <div>
+            <h3 class="text-xl font-black text-slate-900">
+                Recomendación de revisión
+            </h3>
+
+            <p class="text-slate-600 mt-1">
+                Antes de marcar un documento como aprobado, abra el enlace en una ventana privada o navegador externo
+                para confirmar que el estudiante compartió correctamente los permisos de visualización.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buscador = document.getElementById('buscadorDocumentos');
+    const filtroEstado = document.getElementById('filtroEstadoAdmin');
+    const cards = document.querySelectorAll('.documento-card');
+
+    function filtrarDocumentos() {
+        const texto = buscador ? buscador.value.toLowerCase().trim() : '';
+        const estado = filtroEstado ? filtroEstado.value : '';
+
+        cards.forEach(function (card) {
+            const contenido = card.dataset.search.toLowerCase();
+            const estadoCard = card.dataset.estado;
+
+            const coincideTexto = contenido.includes(texto);
+            const coincideEstado = !estado || estadoCard === estado;
+
+            if (coincideTexto && coincideEstado) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+    }
+
+    if (buscador) {
+        buscador.addEventListener('input', filtrarDocumentos);
+    }
+
+    if (filtroEstado) {
+        filtroEstado.addEventListener('change', filtrarDocumentos);
+    }
+
+    const botonesCopiar = document.querySelectorAll('.copiar-link');
+
+    botonesCopiar.forEach(function (boton) {
+        boton.addEventListener('click', async function () {
+            const url = boton.dataset.url;
+            const textoOriginal = boton.textContent;
+
+            try {
+                await navigator.clipboard.writeText(url);
+                boton.textContent = 'URL copiada';
+
+                setTimeout(function () {
+                    boton.textContent = textoOriginal;
+                }, 1500);
+            } catch (error) {
+                alert('No se pudo copiar el enlace.');
+            }
+        });
+    });
+});
+</script>
+
 {% endblock %}

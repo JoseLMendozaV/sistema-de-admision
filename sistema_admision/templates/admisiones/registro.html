@@ -1,31 +1,280 @@
 {% extends 'base.html' %}
 
-{% block title %}Crear cuenta{% endblock %}
+{% block title %}Crear cuenta | Sistema de Admisión de Postgrado{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
-    <h1 class="text-3xl font-black text-slate-900">Crear cuenta de aspirante</h1>
-    <p class="text-slate-600 mt-2">
-        Regístrese para iniciar su solicitud de admisión.
-    </p>
 
-    <form method="post" class="mt-6 space-y-5">
-        {% csrf_token %}
+<div class="grid lg:grid-cols-2 gap-8 items-stretch">
 
-        {% for field in form %}
+    <!-- Panel informativo -->
+    <section class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 text-white p-8 md:p-10 shadow-2xl">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute -top-24 -right-24 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 -left-24 w-72 h-72 bg-cyan-300 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="relative h-full flex flex-col justify-between">
             <div>
-                <label class="block font-semibold mb-2">{{ field.label }}</label>
-                {{ field }}
+                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-bold backdrop-blur">
+                    <span class="w-2 h-2 rounded-full bg-green-300"></span>
+                    Registro de aspirante
+                </span>
 
-                {% if field.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ field.errors|striptags }}</p>
+                <h1 class="mt-6 text-4xl md:text-5xl font-black leading-tight">
+                    Crea tu cuenta e inicia tu proceso de admisión
+                </h1>
+
+                <p class="mt-5 text-blue-50 text-lg leading-relaxed">
+                    Completa tu registro para acceder al panel de aspirante, seleccionar el programa de postgrado
+                    y enviar los enlaces de tus documentos para revisión administrativa.
+                </p>
+            </div>
+
+            <div class="mt-10 space-y-4">
+                <div class="flex items-start gap-4 rounded-2xl bg-white/10 border border-white/20 p-4 backdrop-blur">
+                    <div class="w-10 h-10 rounded-xl bg-white text-blue-800 flex items-center justify-center font-black shrink-0">
+                        1
+                    </div>
+                    <div>
+                        <p class="font-black">Crea tu usuario</p>
+                        <p class="text-sm text-blue-50 mt-1">
+                            Usa tus datos reales para que la administración pueda identificar tu solicitud.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 rounded-2xl bg-white/10 border border-white/20 p-4 backdrop-blur">
+                    <div class="w-10 h-10 rounded-xl bg-white text-blue-800 flex items-center justify-center font-black shrink-0">
+                        2
+                    </div>
+                    <div>
+                        <p class="font-black">Completa tu perfil</p>
+                        <p class="text-sm text-blue-50 mt-1">
+                            Selecciona la Facultad, Centro Regional y programa de postgrado al que deseas aplicar.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 rounded-2xl bg-white/10 border border-white/20 p-4 backdrop-blur">
+                    <div class="w-10 h-10 rounded-xl bg-white text-blue-800 flex items-center justify-center font-black shrink-0">
+                        3
+                    </div>
+                    <div>
+                        <p class="font-black">Envía tus enlaces</p>
+                        <p class="text-sm text-blue-50 mt-1">
+                            La plataforma no almacena documentos, únicamente registra enlaces compartidos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Formulario -->
+    <section class="bg-white rounded-[2rem] shadow-xl border border-slate-200 p-6 md:p-8">
+        <div class="mb-8">
+            <p class="text-sm font-black text-blue-700 uppercase tracking-wider">
+                Nueva cuenta
+            </p>
+
+            <h2 class="mt-2 text-3xl font-black text-slate-900">
+                Datos de acceso
+            </h2>
+
+            <p class="mt-3 text-slate-600">
+                Ingresa la información solicitada para crear tu cuenta de aspirante.
+            </p>
+        </div>
+
+        <form method="post" class="space-y-5" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-5 py-4">
+                    <p class="font-bold">Revisa la información ingresada</p>
+                    <div class="text-sm mt-1">
+                        {{ form.non_field_errors }}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <label for="{{ form.first_name.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                        {{ form.first_name.label }}
+                    </label>
+                    {{ form.first_name }}
+
+                    {% if form.first_name.errors %}
+                        <p class="text-red-600 text-sm mt-1">
+                            {{ form.first_name.errors|striptags }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.last_name.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                        {{ form.last_name.label }}
+                    </label>
+                    {{ form.last_name }}
+
+                    {% if form.last_name.errors %}
+                        <p class="text-red-600 text-sm mt-1">
+                            {{ form.last_name.errors|striptags }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                    {{ form.email.label }}
+                </label>
+                {{ form.email }}
+
+                {% if form.email.errors %}
+                    <p class="text-red-600 text-sm mt-1">
+                        {{ form.email.errors|striptags }}
+                    </p>
                 {% endif %}
             </div>
-        {% endfor %}
 
-        <button class="w-full bg-blue-700 text-white py-3 rounded-2xl font-bold hover:bg-blue-800">
-            Crear cuenta
-        </button>
-    </form>
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                    {{ form.username.label }}
+                </label>
+                {{ form.username }}
+
+                <p class="text-xs text-slate-500 mt-1">
+                    Puedes usar tu cédula, correo institucional o un nombre de usuario fácil de recordar.
+                </p>
+
+                {% if form.username.errors %}
+                    <p class="text-red-600 text-sm mt-1">
+                        {{ form.username.errors|striptags }}
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <label for="{{ form.password1.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                        {{ form.password1.label }}
+                    </label>
+
+                    <div class="relative">
+                        {{ form.password1 }}
+
+                        <button 
+                            type="button"
+                            class="toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-700"
+                            data-target="id_password1"
+                            aria-label="Mostrar u ocultar contraseña"
+                        >
+                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    {% if form.password1.errors %}
+                        <p class="text-red-600 text-sm mt-1">
+                            {{ form.password1.errors|striptags }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.password2.id_for_label }}" class="block font-bold text-slate-700 mb-2">
+                        {{ form.password2.label }}
+                    </label>
+
+                    <div class="relative">
+                        {{ form.password2 }}
+
+                        <button 
+                            type="button"
+                            class="toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-700"
+                            data-target="id_password2"
+                            aria-label="Mostrar u ocultar contraseña"
+                        >
+                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    {% if form.password2.errors %}
+                        <p class="text-red-600 text-sm mt-1">
+                            {{ form.password2.errors|striptags }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="rounded-2xl bg-blue-50 border border-blue-200 text-blue-800 p-5">
+                <div class="flex gap-3">
+                    <div class="shrink-0 mt-0.5">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 22a10 10 0 100-20 10 10 0 000 20z"></path>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <p class="font-black">Importante</p>
+                        <p class="text-sm mt-1">
+                            Después de crear tu cuenta, deberás completar tu perfil de admisión y registrar
+                            los enlaces URL de los documentos solicitados.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button 
+                type="submit"
+                class="w-full bg-blue-700 text-white py-4 rounded-2xl font-black hover:bg-blue-800 transition shadow-lg shadow-blue-200"
+            >
+                Crear cuenta de aspirante
+            </button>
+
+            <div class="text-center pt-2">
+                <p class="text-sm text-slate-600">
+                    ¿Ya tienes una cuenta?
+                    <a href="{% url 'login' %}" class="font-black text-blue-700 hover:underline">
+                        Inicia sesión aquí
+                    </a>
+                </p>
+            </div>
+        </form>
+    </section>
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const botones = document.querySelectorAll('.toggle-password');
+
+    botones.forEach(function (boton) {
+        boton.addEventListener('click', function () {
+            const targetId = boton.dataset.target;
+            const input = document.getElementById(targetId);
+
+            if (!input) {
+                return;
+            }
+
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        });
+    });
+});
+</script>
+
 {% endblock %}

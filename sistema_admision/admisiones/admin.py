@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import Requirement, StudentProfile, StudentDocumentSubmission
+from .models import (
+    Requirement,
+    StudentProfile,
+    StudentDocumentSubmission,
+    AcademicUnit,
+    GraduateProgram,
+)
 
 
 @admin.register(StudentProfile)
@@ -20,11 +26,14 @@ class StudentProfileAdmin(admin.ModelAdmin):
         'user__last_name',
         'user__email',
         'cedula_pasaporte',
+        'programa_postgrado__nombre',
+        'centro_regional__nombre',
     ]
     list_filter = [
         'universidad_origen',
         'sistema_calificacion_diferente',
         'centro_regional',
+        'programa_postgrado',
     ]
 
 
@@ -67,4 +76,43 @@ class StudentDocumentSubmissionAdmin(admin.ModelAdmin):
         'profile__user__email',
         'requirement__titulo',
         'enlace_url',
+    ]
+
+
+@admin.register(AcademicUnit)
+class AcademicUnitAdmin(admin.ModelAdmin):
+    list_display = [
+        'nombre',
+        'tipo',
+        'orden',
+        'activo',
+    ]
+    list_editable = [
+        'tipo',
+        'orden',
+        'activo',
+    ]
+    search_fields = ['nombre']
+    list_filter = ['tipo', 'activo']
+
+
+@admin.register(GraduateProgram)
+class GraduateProgramAdmin(admin.ModelAdmin):
+    list_display = [
+        'nombre',
+        'unidad_academica',
+        'orden',
+        'activo',
+    ]
+    list_editable = [
+        'orden',
+        'activo',
+    ]
+    search_fields = [
+        'nombre',
+        'unidad_academica__nombre',
+    ]
+    list_filter = [
+        'unidad_academica',
+        'activo',
     ]
